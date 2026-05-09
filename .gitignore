@@ -44,3 +44,7 @@ Thumbs.db
 # API keys
 claude-api-key.txt
 api/analizar.php
+
+.claude
+.vscode
+*.jpg
