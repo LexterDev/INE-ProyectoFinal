@@ -1,0 +1,16 @@
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+  <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">{{ label }}</p>
+  @if (flujos.length > 0) {
+    <div class="h-52">
+      <canvas baseChart
+        [data]="chartData"
+        [options]="chartOptions"
+        type="bar">
+      </canvas>
+    </div>
+  } @else {
+    <div class="h-52 flex items-center justify-center text-slate-400 text-sm">
+      Ingresa los flujos de caja para ver la gráfica
+    </div>
+  }
+</div>

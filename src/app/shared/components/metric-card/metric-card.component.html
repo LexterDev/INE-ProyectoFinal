@@ -1,0 +1,7 @@
+<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+  <p class="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">{{ label }}</p>
+  <p class="text-3xl font-bold text-slate-800 mb-4">{{ valorFormateado }}</p>
+  @if (veredicto) {
+    <app-verdict-badge [veredicto]="veredicto" />
+  }
+</div>

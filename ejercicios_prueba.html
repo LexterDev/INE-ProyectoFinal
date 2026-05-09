@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ejercicios de Prueba — INE App (SEAE)</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1e293b; margin: 2.5cm; line-height: 1.5; }
+  h1 { font-size: 18pt; color: #0f172a; text-align: center; border-bottom: 3px solid #6366f1; padding-bottom: 8px; }
+  h2 { font-size: 14pt; color: #ffffff; background: #0f172a; padding: 8px 12px; margin-top: 30px; page-break-before: always; }
+  h2:first-of-type { page-break-before: avoid; }
+  h3 { font-size: 11pt; color: #6366f1; font-weight: bold; margin: 14px 0 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 16px 0; font-size: 10.5pt; }
+  th { background: #6366f1; color: white; padding: 6px 10px; text-align: left; font-weight: bold; }
+  td { padding: 5px 10px; border: 1px solid #e2e8f0; }
+  tr:nth-child(even) { background: #f8fafc; }
+  .aceptado { background: #d1fae5; color: #065f46; font-weight: bold; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+  .rechazado { background: #ffe4e6; color: #9f1239; font-weight: bold; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+  .ganador { background: #d1fae5; color: #065f46; font-weight: bold; padding: 4px 10px; border-radius: 4px; display: inline-block; }
+  .resultado-principal { font-size: 13pt; font-weight: bold; color: #0f172a; border-left: 4px solid #6366f1; padding: 6px 12px; background: #f8fafc; margin: 10px 0; }
+  .nota { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 6px 12px; font-size: 10pt; margin: 8px 0; }
+  .formula { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 12px; font-family: 'Courier New', monospace; font-size: 10pt; margin: 6px 0; }
+  .subtitulo { font-size: 10pt; color: #64748b; text-align: center; margin-top: -4px; margin-bottom: 20px; }
+  .separador { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
+  .col-a { background: #eff6ff; }
+  .col-b { background: #f0fdf4; }
+  p { margin: 4px 0 8px 0; }
+</style>
+</head>
+<body>
+
+<h1>Ejercicios de Prueba — INE App</h1>
+<p class="subtitulo">Sistema de Evaluación de Alternativas Económicas (SEAE) · INE 135 · Ciclo I/2026<br>
+Un ejercicio por módulo/funcionalidad a probar</p>
+
+<table style="margin-bottom:20px;">
+  <tr><th>#</th><th>Módulo</th><th>Resultado esperado</th></tr>
+  <tr><td>1</td><td>VPN — caso ACEPTADO</td><td>VPN positivo, veredicto ACEPTADO</td></tr>
+  <tr><td>2</td><td>VPN — caso RECHAZADO</td><td>VPN negativo, veredicto RECHAZADO</td></tr>
+  <tr><td>3</td><td>CAE — cálculo básico</td><td>CAE anual calculado correctamente</td></tr>
+  <tr><td>4</td><td>TIR — caso ACEPTADO</td><td>TIR &gt; TMAR, veredicto ACEPTADO</td></tr>
+  <tr><td>5</td><td>TIR — caso RECHAZADO</td><td>TIR &lt; TMAR, veredicto RECHAZADO</td></tr>
+  <tr><td>6</td><td>Comparación VPN</td><td>Alternativa B ganadora</td></tr>
+  <tr><td>7</td><td>Comparación CAE</td><td>Alternativa B ganadora (menor costo)</td></tr>
+  <tr><td>8</td><td>Comparación TIR</td><td>Alternativa B ganadora</td></tr>
+</table>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 1 — VPN: Proyecto de Expansión de Almacén (ACEPTADO)</h2>
+
+<h3>Enunciado</h3>
+<p>Una empresa distribuidora evalúa expandir su almacén central. La inversión inicial es de <strong>$45,000</strong>. Se estima una vida útil de <strong>4 años</strong>, con una tasa de descuento del <strong>12% anual</strong>. Los flujos de caja proyectados son crecientes conforme se consolida la operación, y al final del proyecto se recupera un valor de salvamento de <strong>$5,000</strong>. ¿Es conveniente realizar la inversión?</p>
+
+<h3>Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr>
+  <tr><td>Inversión inicial</td><td>P</td><td>$45,000.00</td></tr>
+  <tr><td>Tasa de descuento</td><td>i</td><td>12% anual</td></tr>
+  <tr><td>Vida útil</td><td>n</td><td>4 años</td></tr>
+  <tr><td>Valor de salvamento</td><td>VS</td><td>$5,000.00</td></tr>
+</table>
+
+<h3>Datos de Entrada (ingresar en la app)</h3>
+<table>
+  <tr><th>Campo en la app</th><th>Valor a ingresar</th></tr>
+  <tr><td>Inversión inicial</td><td>45000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td>12</td></tr>
+  <tr><td>Vida útil (años)</td><td>4</td></tr>
+  <tr><td>Flujo de caja — Año 1</td><td>15000</td></tr>
+  <tr><td>Flujo de caja — Año 2</td><td>18000</td></tr>
+  <tr><td>Flujo de caja — Año 3</td><td>20000</td></tr>
+  <tr><td>Flujo de caja — Año 4</td><td>22000</td></tr>
+  <tr><td>Valor de salvamento</td><td>5000</td></tr>
+</table>
+
+<h3>Fórmula</h3>
+<div class="formula">VPN = −P + Σ [ Ft / (1+i)^t ] + VS / (1+i)^n</div>
+
+<h3>Procedimiento Manual</h3>
+<table>
+  <tr><th>Período</th><th>Flujo (Ft)</th><th>Factor (1.12)^t</th><th>Valor Presente</th></tr>
+  <tr><td>Año 1</td><td>$15,000.00</td><td>1.1200</td><td>$13,392.86</td></tr>
+  <tr><td>Año 2</td><td>$18,000.00</td><td>1.2544</td><td>$14,347.52</td></tr>
+  <tr><td>Año 3</td><td>$20,000.00</td><td>1.4049</td><td>$14,235.21</td></tr>
+  <tr><td>Año 4</td><td>$22,000.00</td><td>1.5735</td><td>$13,986.41</td></tr>
+  <tr><td>Salvamento</td><td>$5,000.00</td><td>1.5735</td><td>$3,178.73</td></tr>
+  <tr style="font-weight:bold; background:#eff6ff;"><td colspan="3">VP Total de Ingresos</td><td>$59,140.73</td></tr>
+</table>
+<div class="formula">VPN = $59,140.73 − $45,000.00 = $14,140.73</div>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal">VPN = $14,140.73 &nbsp;|&nbsp; VP Ingresos = $59,140.73 &nbsp;|&nbsp; <span class="aceptado">✓ ACEPTADO</span></div>
+
+<h3>Análisis</h3>
+<p>El VPN es <strong>positivo ($14,140.73 > $0)</strong>, lo que indica que el proyecto genera valor por encima del costo de oportunidad del 12% anual. Por cada dólar invertido, el proyecto retorna valor adicional neto al inversionista. La recomendación es <strong>ejecutar el proyecto</strong>.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 2 — VPN: Apertura de Sucursal (RECHAZADO)</h2>
+
+<h3>Enunciado</h3>
+<p>Una empresa considera abrir una nueva sucursal con una inversión de <strong>$80,000</strong>. La sucursal tendría una vida operativa de <strong>3 años</strong> y la empresa exige una rentabilidad mínima del <strong>15%</strong>. Las proyecciones de ingresos netos son conservadoras dado el mercado incierto. Al cierre se estima recuperar <strong>$5,000</strong> en activos. ¿Se justifica la apertura?</p>
+
+<h3>Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr>
+  <tr><td>Inversión inicial</td><td>P</td><td>$80,000.00</td></tr>
+  <tr><td>Tasa de descuento</td><td>i</td><td>15% anual</td></tr>
+  <tr><td>Vida útil</td><td>n</td><td>3 años</td></tr>
+  <tr><td>Valor de salvamento</td><td>VS</td><td>$5,000.00</td></tr>
+</table>
+
+<h3>Datos de Entrada (ingresar en la app)</h3>
+<table>
+  <tr><th>Campo en la app</th><th>Valor a ingresar</th></tr>
+  <tr><td>Inversión inicial</td><td>80000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td>15</td></tr>
+  <tr><td>Vida útil (años)</td><td>3</td></tr>
+  <tr><td>Flujo de caja — Año 1</td><td>18000</td></tr>
+  <tr><td>Flujo de caja — Año 2</td><td>20000</td></tr>
+  <tr><td>Flujo de caja — Año 3</td><td>22000</td></tr>
+  <tr><td>Valor de salvamento</td><td>5000</td></tr>
+</table>
+
+<h3>Procedimiento Manual</h3>
+<table>
+  <tr><th>Período</th><th>Flujo (Ft)</th><th>Factor (1.15)^t</th><th>Valor Presente</th></tr>
+  <tr><td>Año 1</td><td>$18,000.00</td><td>1.1500</td><td>$15,652.17</td></tr>
+  <tr><td>Año 2</td><td>$20,000.00</td><td>1.3225</td><td>$15,132.46</td></tr>
+  <tr><td>Año 3</td><td>$22,000.00</td><td>1.5209</td><td>$14,465.44</td></tr>
+  <tr><td>Salvamento</td><td>$5,000.00</td><td>1.5209</td><td>$3,287.61</td></tr>
+  <tr style="font-weight:bold; background:#eff6ff;"><td colspan="3">VP Total de Ingresos</td><td>$48,537.68</td></tr>
+</table>
+<div class="formula">VPN = $48,537.68 − $80,000.00 = −$31,462.32</div>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal">VPN = −$31,462.32 &nbsp;|&nbsp; VP Ingresos = $48,537.68 &nbsp;|&nbsp; <span class="rechazado">✗ RECHAZADO</span></div>
+
+<h3>Análisis</h3>
+<p>El VPN es <strong>negativo (−$31,462.32 &lt; $0)</strong>. Los flujos de ingresos descontados al 15% no logran cubrir la inversión inicial. El proyecto destruye valor y la recomendación es <strong>no ejecutarlo</strong> bajo estas condiciones. Sería necesario aumentar los flujos proyectados o reducir la tasa de descuento para que sea viable.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 3 — CAE: Compra de Equipo Industrial</h2>
+
+<h3>Enunciado</h3>
+<p>Una planta manufacturera evalúa adquirir un equipo industrial con un costo de <strong>$80,000</strong>. El equipo tiene una vida útil de <strong>8 años</strong>, genera costos de operación anuales de <strong>$12,000</strong>, y al final se puede vender como chatarra en <strong>$10,000</strong>. La tasa de descuento de la empresa es del <strong>10%</strong>. Calcule el Costo Anual Equivalente para compararlo con otras opciones de adquisición.</p>
+
+<h3>Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr>
+  <tr><td>Costo inicial</td><td>CI</td><td>$80,000.00</td></tr>
+  <tr><td>Tasa de descuento</td><td>i</td><td>10% anual</td></tr>
+  <tr><td>Vida útil</td><td>n</td><td>8 años</td></tr>
+  <tr><td>Costos de operación anuales</td><td>CO</td><td>$12,000.00</td></tr>
+  <tr><td>Valor de salvamento</td><td>VS</td><td>$10,000.00</td></tr>
+</table>
+
+<h3>Datos de Entrada (ingresar en la app)</h3>
+<table>
+  <tr><th>Campo en la app</th><th>Valor a ingresar</th></tr>
+  <tr><td>Costo inicial</td><td>80000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td>10</td></tr>
+  <tr><td>Vida útil (años)</td><td>8</td></tr>
+  <tr><td>Costos de operación anuales</td><td>12000</td></tr>
+  <tr><td>Valor de salvamento</td><td>10000</td></tr>
+</table>
+
+<h3>Fórmula</h3>
+<div class="formula">CAE = (CI − VP_salvamento) × [i(1+i)^n / ((1+i)^n − 1)] + CO</div>
+
+<h3>Procedimiento Manual</h3>
+<table>
+  <tr><th>Paso</th><th>Cálculo</th><th>Resultado</th></tr>
+  <tr><td>(1+i)^n</td><td>(1.10)^8</td><td>2.14359</td></tr>
+  <tr><td>Factor CRF</td><td>(0.10 × 2.14359) / (2.14359 − 1)</td><td>0.18744</td></tr>
+  <tr><td>VP del salvamento</td><td>$10,000 / 2.14359</td><td>$4,665.07</td></tr>
+  <tr><td>Base de recuperación</td><td>$80,000 − $4,665.07</td><td>$75,334.93</td></tr>
+  <tr><td>Recuperación de capital</td><td>$75,334.93 × 0.18744</td><td>$14,121.09</td></tr>
+  <tr style="font-weight:bold; background:#eff6ff;"><td>CAE total</td><td>$14,121.09 + $12,000.00</td><td>$26,121.09</td></tr>
+</table>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal">CAE = $26,121.09 / año &nbsp;|&nbsp; VP Salvamento = $4,665.07</div>
+<div class="nota">El CAE representa el costo uniforme anual que equivale a todos los costos del equipo durante su vida útil. Se usa para comparar alternativas: se prefiere la de menor CAE.</div>
+
+<h3>Análisis</h3>
+<p>Este equipo tiene un costo anual equivalente de <strong>$26,121.09</strong>. Esto significa que, en términos económicos uniformes, poseer y operar este equipo cuesta el equivalente a desembolsar $26,121.09 cada año. Para tomar una decisión de compra se debe comparar con el CAE de alternativas disponibles (ver Ejercicio 7).</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 4 — TIR: Maquinaria de Producción (ACEPTADO)</h2>
+
+<h3>Enunciado</h3>
+<p>Una fábrica evalúa adquirir nueva maquinaria con una inversión de <strong>$30,000</strong>. La maquinaria tiene una vida útil de <strong>4 años</strong> y genera ahorros netos variables. Al final se vende por <strong>$4,000</strong>. La TMAR (tasa mínima aceptable de rendimiento) de la empresa es del <strong>10%</strong>. ¿La inversión supera el rendimiento mínimo exigido?</p>
+
+<h3>Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr>
+  <tr><td>Inversión inicial</td><td>P</td><td>$30,000.00</td></tr>
+  <tr><td>TMAR</td><td>TMAR</td><td>10% anual</td></tr>
+  <tr><td>Vida útil</td><td>n</td><td>4 años</td></tr>
+  <tr><td>Valor de salvamento</td><td>VS</td><td>$4,000.00</td></tr>
+</table>
+
+<h3>Datos de Entrada (ingresar en la app)</h3>
+<table>
+  <tr><th>Campo en la app</th><th>Valor a ingresar</th></tr>
+  <tr><td>Inversión inicial</td><td>30000</td></tr>
+  <tr><td>TMAR (%)</td><td>10</td></tr>
+  <tr><td>Vida útil (años)</td><td>4</td></tr>
+  <tr><td>Flujo de caja — Año 1</td><td>10000</td></tr>
+  <tr><td>Flujo de caja — Año 2</td><td>12000</td></tr>
+  <tr><td>Flujo de caja — Año 3</td><td>12000</td></tr>
+  <tr><td>Flujo de caja — Año 4</td><td>10000</td></tr>
+  <tr><td>Valor de salvamento</td><td>4000</td></tr>
+</table>
+
+<h3>Fórmula</h3>
+<div class="formula">0 = −P + Σ [ Ft / (1+TIR)^t ] + VS / (1+TIR)^n</div>
+<div class="nota">La TIR se obtiene por método iterativo (bisección). El sistema resuelve numéricamente.</div>
+
+<h3>Verificación Manual (comprobación a r = 20%)</h3>
+<table>
+  <tr><th>Período</th><th>Flujo (Ft)</th><th>Factor (1.20)^t</th><th>Valor Presente</th></tr>
+  <tr><td>Año 1</td><td>$10,000.00</td><td>1.2000</td><td>$8,333.33</td></tr>
+  <tr><td>Año 2</td><td>$12,000.00</td><td>1.4400</td><td>$8,333.33</td></tr>
+  <tr><td>Año 3</td><td>$12,000.00</td><td>1.7280</td><td>$6,944.44</td></tr>
+  <tr><td>Año 4 + Salv.</td><td>$14,000.00</td><td>2.0736</td><td>$6,750.97</td></tr>
+  <tr style="font-weight:bold;"><td colspan="3">VP Total a r=20%</td><td>$30,362.07</td></tr>
+</table>
+<p>VP($30,362) &gt; Inversión($30,000) → el VPN es positivo a 20% → la TIR supera el 20%.</p>
+<p>Probando a r=21%: VP Total ≈ $29,765 &lt; $30,000 → VPN negativo → TIR está entre 20% y 21%.</p>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal">TIR ≈ 20.61% &nbsp;|&nbsp; TMAR = 10.00% &nbsp;|&nbsp; <span class="aceptado">✓ ACEPTADO</span></div>
+
+<h3>Análisis</h3>
+<p>La TIR calculada (~20.61%) <strong>supera ampliamente la TMAR del 10%</strong>. Esto indica que la inversión rinde más que el costo de oportunidad del capital. La diferencia TIR−TMAR ≈ 10.61 puntos porcentuales da margen de seguridad. La recomendación es <strong>adquirir la maquinaria</strong>.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 5 — TIR: Sistema de Refrigeración (RECHAZADO)</h2>
+
+<h3>Enunciado</h3>
+<p>Una cadena de supermercados evalúa instalar un nuevo sistema de refrigeración con una inversión de <strong>$50,000</strong>. Se proyectan ahorros en energía y mantenimiento durante <strong>5 años</strong>. El valor de rescate al final es de <strong>$5,000</strong>. La empresa exige una TMAR del <strong>15%</strong>. Los ahorros proyectados no son tan altos como se esperaba. ¿Se justifica el sistema?</p>
+
+<h3>Variables</h3>
+<table>
+  <tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr>
+  <tr><td>Inversión inicial</td><td>P</td><td>$50,000.00</td></tr>
+  <tr><td>TMAR</td><td>TMAR</td><td>15% anual</td></tr>
+  <tr><td>Vida útil</td><td>n</td><td>5 años</td></tr>
+  <tr><td>Valor de salvamento</td><td>VS</td><td>$5,000.00</td></tr>
+</table>
+
+<h3>Datos de Entrada (ingresar en la app)</h3>
+<table>
+  <tr><th>Campo en la app</th><th>Valor a ingresar</th></tr>
+  <tr><td>Inversión inicial</td><td>50000</td></tr>
+  <tr><td>TMAR (%)</td><td>15</td></tr>
+  <tr><td>Vida útil (años)</td><td>5</td></tr>
+  <tr><td>Flujo de caja — Año 1</td><td>10000</td></tr>
+  <tr><td>Flujo de caja — Año 2</td><td>12000</td></tr>
+  <tr><td>Flujo de caja — Año 3</td><td>13000</td></tr>
+  <tr><td>Flujo de caja — Año 4</td><td>12000</td></tr>
+  <tr><td>Flujo de caja — Año 5</td><td>10000</td></tr>
+  <tr><td>Valor de salvamento</td><td>5000</td></tr>
+</table>
+
+<h3>Verificación Manual (comprobación a r = 7% y r = 8%)</h3>
+<table>
+  <tr><th>Año</th><th>Flujo</th><th>VP a r=7%</th><th>VP a r=8%</th></tr>
+  <tr><td>1</td><td>$10,000</td><td>$9,345.79</td><td>$9,259.26</td></tr>
+  <tr><td>2</td><td>$12,000</td><td>$10,481.35</td><td>$10,288.07</td></tr>
+  <tr><td>3</td><td>$13,000</td><td>$10,612.25</td><td>$10,319.10</td></tr>
+  <tr><td>4</td><td>$12,000</td><td>$9,154.31</td><td>$8,820.60</td></tr>
+  <tr><td>5 + Salv.</td><td>$15,000</td><td>$10,694.79</td><td>$10,209.42</td></tr>
+  <tr style="font-weight:bold;"><td colspan="2">VP Total</td><td>$50,288.49</td><td>$48,896.45</td></tr>
+  <tr style="font-weight:bold;"><td colspan="2">VPN</td><td style="color:#065f46">+$288.49</td><td style="color:#9f1239">−$1,103.55</td></tr>
+</table>
+<p>Por interpolación lineal: TIR ≈ 7% + [288.49 / (288.49 + 1103.55)] × 1% ≈ <strong>7.21%</strong></p>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal">TIR ≈ 7.21% &nbsp;|&nbsp; TMAR = 15.00% &nbsp;|&nbsp; <span class="rechazado">✗ RECHAZADO</span></div>
+
+<h3>Análisis</h3>
+<p>La TIR calculada (~7.21%) es <strong>muy inferior a la TMAR del 15%</strong>. El sistema de refrigeración no genera el rendimiento mínimo exigido por la empresa. La brecha TIR−TMAR ≈ −7.79% indica que la inversión no es atractiva bajo estas condiciones. La recomendación es <strong>no realizar la inversión</strong> o renegociar el precio de compra del sistema.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 6 — Comparación VPN: Proyecto A vs. Proyecto B</h2>
+
+<h3>Enunciado</h3>
+<p>Una empresa tiene capital disponible y debe elegir entre dos proyectos de inversión mutuamente excluyentes. Ambos tienen la misma tasa de descuento del <strong>12%</strong> y una vida útil de <strong>4 años</strong>. Se deben comparar mediante el método VPN y seleccionar el más conveniente.</p>
+
+<h3>Datos de Entrada — Alternativa A</h3>
+<table>
+  <tr><th>Campo</th><th class="col-a">Alternativa A</th></tr>
+  <tr><td>Inversión inicial</td><td class="col-a">$45,000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td class="col-a">12</td></tr>
+  <tr><td>Vida útil (años)</td><td class="col-a">4</td></tr>
+  <tr><td>Flujo Año 1</td><td class="col-a">$15,000</td></tr>
+  <tr><td>Flujo Año 2</td><td class="col-a">$18,000</td></tr>
+  <tr><td>Flujo Año 3</td><td class="col-a">$20,000</td></tr>
+  <tr><td>Flujo Año 4</td><td class="col-a">$22,000</td></tr>
+  <tr><td>Valor de salvamento</td><td class="col-a">$5,000</td></tr>
+</table>
+
+<h3>Datos de Entrada — Alternativa B</h3>
+<table>
+  <tr><th>Campo</th><th class="col-b">Alternativa B</th></tr>
+  <tr><td>Inversión inicial</td><td class="col-b">$55,000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td class="col-b">12</td></tr>
+  <tr><td>Vida útil (años)</td><td class="col-b">4</td></tr>
+  <tr><td>Flujo Año 1</td><td class="col-b">$22,000</td></tr>
+  <tr><td>Flujo Año 2</td><td class="col-b">$24,000</td></tr>
+  <tr><td>Flujo Año 3</td><td class="col-b">$26,000</td></tr>
+  <tr><td>Flujo Año 4</td><td class="col-b">$28,000</td></tr>
+  <tr><td>Valor de salvamento</td><td class="col-b">$6,000</td></tr>
+</table>
+
+<h3>Cálculo Comparativo</h3>
+<table>
+  <tr><th>Indicador</th><th class="col-a">Alternativa A</th><th class="col-b">Alternativa B</th></tr>
+  <tr><td>Inversión inicial</td><td class="col-a">$45,000.00</td><td class="col-b">$55,000.00</td></tr>
+  <tr><td>VP de ingresos</td><td class="col-a">$59,140.73</td><td class="col-b">$78,892.74</td></tr>
+  <tr style="font-weight:bold;"><td>VPN</td><td class="col-a">$14,140.73</td><td class="col-b">$23,892.74</td></tr>
+  <tr><td>Veredicto</td><td class="col-a"><span class="aceptado">ACEPTADO</span></td><td class="col-b"><span class="aceptado">ACEPTADO</span></td></tr>
+</table>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal"><span class="ganador">Alternativa B — RECOMENDADA</span> &nbsp; (VPN B = $23,892.74 &gt; VPN A = $14,140.73)</div>
+
+<h3>Análisis</h3>
+<p>Ambas alternativas son aceptables (VPN &gt; 0), pero el criterio VPN establece que se selecciona la de <strong>mayor VPN positivo</strong>. La Alternativa B genera $9,752.01 más de valor presente neto, a pesar de requerir $10,000 más de inversión. La diferencia se justifica por sus flujos más altos. Se recomienda la <strong>Alternativa B</strong>.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 7 — Comparación CAE: Equipo A vs. Equipo B</h2>
+
+<h3>Enunciado</h3>
+<p>Una empresa debe elegir entre dos equipos para su línea de producción. El Equipo A es más costoso pero dura más; el Equipo B es más barato y tiene menor vida útil. Para comparar correctamente equipos con diferentes vidas útiles se utiliza el <strong>CAE</strong>. La tasa de descuento es del <strong>10%</strong>. ¿Cuál equipo tiene el menor costo anual uniforme?</p>
+
+<h3>Datos de Entrada</h3>
+<table>
+  <tr><th>Campo</th><th class="col-a">Equipo A</th><th class="col-b">Equipo B</th></tr>
+  <tr><td>Costo inicial</td><td class="col-a">80000</td><td class="col-b">45000</td></tr>
+  <tr><td>Tasa de descuento (%)</td><td class="col-a">10</td><td class="col-b">10</td></tr>
+  <tr><td>Vida útil (años)</td><td class="col-a">8</td><td class="col-b">6</td></tr>
+  <tr><td>Costos de operación anuales</td><td class="col-a">12000</td><td class="col-b">8000</td></tr>
+  <tr><td>Valor de salvamento</td><td class="col-a">10000</td><td class="col-b">5000</td></tr>
+</table>
+
+<h3>Cálculo del CAE — Equipo B</h3>
+<table>
+  <tr><th>Paso</th><th>Cálculo</th><th>Resultado</th></tr>
+  <tr><td>(1.10)^6</td><td>—</td><td>1.77156</td></tr>
+  <tr><td>Factor CRF (6 años, 10%)</td><td>(0.10 × 1.77156) / (1.77156 − 1)</td><td>0.22961</td></tr>
+  <tr><td>VP Salvamento</td><td>$5,000 / 1.77156</td><td>$2,822.37</td></tr>
+  <tr><td>Base de recuperación</td><td>$45,000 − $2,822.37</td><td>$42,177.63</td></tr>
+  <tr><td>Recuperación de capital</td><td>$42,177.63 × 0.22961</td><td>$9,684.41</td></tr>
+  <tr style="font-weight:bold;"><td>CAE Equipo B</td><td>$9,684.41 + $8,000.00</td><td>$17,684.41</td></tr>
+</table>
+
+<h3>Resultado Comparativo</h3>
+<table>
+  <tr><th>Indicador</th><th class="col-a">Equipo A</th><th class="col-b">Equipo B</th></tr>
+  <tr><td>Costo inicial</td><td class="col-a">$80,000.00</td><td class="col-b">$45,000.00</td></tr>
+  <tr><td>Vida útil</td><td class="col-a">8 años</td><td class="col-b">6 años</td></tr>
+  <tr><td>VP Salvamento</td><td class="col-a">$4,665.07</td><td class="col-b">$2,822.37</td></tr>
+  <tr style="font-weight:bold;"><td>CAE</td><td class="col-a">$26,121.09 / año</td><td class="col-b">$17,684.41 / año</td></tr>
+</table>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal"><span class="ganador">Equipo B — RECOMENDADO</span> &nbsp; (CAE B = $17,684.41 &lt; CAE A = $26,121.09)</div>
+
+<h3>Análisis</h3>
+<p>Aunque el Equipo A tiene mayor vida útil, su <strong>CAE es significativamente mayor</strong> ($26,121 vs $17,684). El Equipo B es económicamente más eficiente: genera el mismo servicio productivo a un costo anual uniforme $8,437 menor. El criterio CAE establece que se elige la alternativa de <strong>menor costo anual equivalente</strong>. Se recomienda el <strong>Equipo B</strong>.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>Ejercicio 8 — Comparación TIR: Proyecto Industrial A vs. B</h2>
+
+<h3>Enunciado</h3>
+<p>Un fondo de inversión evalúa dos proyectos industriales alternativos. Ambos requieren diferente capital inicial y generan flujos distintos. La TMAR del fondo es del <strong>10%</strong> anual. Se debe calcular la TIR de cada proyecto, determinar cuáles superan la TMAR, y elegir el de mayor rendimiento.</p>
+
+<h3>Datos de Entrada — Alternativa A</h3>
+<table>
+  <tr><th>Campo</th><th class="col-a">Alternativa A</th></tr>
+  <tr><td>Inversión inicial</td><td class="col-a">$30,000</td></tr>
+  <tr><td>TMAR (%)</td><td class="col-a">10</td></tr>
+  <tr><td>Vida útil (años)</td><td class="col-a">4</td></tr>
+  <tr><td>Flujo Año 1</td><td class="col-a">$10,000</td></tr>
+  <tr><td>Flujo Año 2</td><td class="col-a">$12,000</td></tr>
+  <tr><td>Flujo Año 3</td><td class="col-a">$12,000</td></tr>
+  <tr><td>Flujo Año 4</td><td class="col-a">$10,000</td></tr>
+  <tr><td>Valor de salvamento</td><td class="col-a">$4,000</td></tr>
+</table>
+
+<h3>Datos de Entrada — Alternativa B</h3>
+<table>
+  <tr><th>Campo</th><th class="col-b">Alternativa B</th></tr>
+  <tr><td>Inversión inicial</td><td class="col-b">$50,000</td></tr>
+  <tr><td>TMAR (%)</td><td class="col-b">10</td></tr>
+  <tr><td>Vida útil (años)</td><td class="col-b">4</td></tr>
+  <tr><td>Flujo Año 1</td><td class="col-b">$18,000</td></tr>
+  <tr><td>Flujo Año 2</td><td class="col-b">$20,000</td></tr>
+  <tr><td>Flujo Año 3</td><td class="col-b">$20,000</td></tr>
+  <tr><td>Flujo Año 4</td><td class="col-b">$18,000</td></tr>
+  <tr><td>Valor de salvamento</td><td class="col-b">$6,000</td></tr>
+</table>
+
+<h3>Verificación Alt. B a r = 22%</h3>
+<table>
+  <tr><th>Año</th><th>Flujo</th><th>Factor (1.22)^t</th><th>VP</th></tr>
+  <tr><td>1</td><td>$18,000</td><td>1.2200</td><td>$14,754.10</td></tr>
+  <tr><td>2</td><td>$20,000</td><td>1.4884</td><td>$13,437.11</td></tr>
+  <tr><td>3</td><td>$20,000</td><td>1.8158</td><td>$11,014.95</td></tr>
+  <tr><td>4 + Salv.</td><td>$24,000</td><td>2.2153</td><td>$10,833.64</td></tr>
+  <tr style="font-weight:bold;"><td colspan="3">VP Total a r=22%</td><td>$50,039.80 ≈ $50,000 ✓</td></tr>
+</table>
+<p>El VP total ≈ inversión → TIR B ≈ <strong>22%</strong></p>
+
+<h3>Resultado Comparativo</h3>
+<table>
+  <tr><th>Indicador</th><th class="col-a">Alternativa A</th><th class="col-b">Alternativa B</th></tr>
+  <tr><td>Inversión</td><td class="col-a">$30,000</td><td class="col-b">$50,000</td></tr>
+  <tr><td>TMAR</td><td class="col-a">10%</td><td class="col-b">10%</td></tr>
+  <tr style="font-weight:bold;"><td>TIR calculada</td><td class="col-a">≈ 20.61%</td><td class="col-b">≈ 22.03%</td></tr>
+  <tr><td>¿TIR &gt; TMAR?</td><td class="col-a"><span class="aceptado">SÍ → ACEPTADO</span></td><td class="col-b"><span class="aceptado">SÍ → ACEPTADO</span></td></tr>
+</table>
+
+<h3>Resultado Esperado en la App</h3>
+<div class="resultado-principal"><span class="ganador">Alternativa B — RECOMENDADA</span> &nbsp; (TIR B ≈ 22.03% &gt; TIR A ≈ 20.61%)</div>
+
+<h3>Análisis</h3>
+<p>Ambos proyectos superan la TMAR del 10% y ambos son aceptables. El criterio TIR en comparación de alternativas establece que se elige la de <strong>mayor TIR</strong>. La Alternativa B, aunque requiere mayor inversión ($50,000 vs $30,000), genera un rendimiento mayor (22.03% vs 20.61%). La recomendación es la <strong>Alternativa B</strong>.</p>
+
+<hr class="separador">
+<p style="text-align:center; color:#64748b; font-size:9pt;">INE App · SEAE · INE 135 · Ciclo I/2026 · Universidad de El Salvador · Occidente</p>
+
+</body>
+</html>

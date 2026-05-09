@@ -1,0 +1,193 @@
+<div class="flex flex-col min-h-screen">
+  <app-topbar titulo="Valor Presente Neto" subtitulo="Evalúa si un proyecto genera valor sobre la tasa de descuento" />
+
+  <div id="vpn-reporte" class="flex-1 p-6 space-y-6">
+
+    <!-- Acciones -->
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-widest">Módulo VPN</h2>
+      <div class="flex gap-2">
+        <button (click)="cargarEjemplo()"
+          class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Cargar ejemplo
+        </button>
+        <button (click)="limpiar()"
+          class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+          Limpiar
+        </button>
+        @if (resultado) {
+          <button (click)="exportarPDF()"
+            class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Exportar PDF
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- FORMULARIO -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
+        <h3 class="text-sm font-semibold text-slate-700">Datos de entrada</h3>
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Inversión inicial ($)</label>
+          <input type="number" [(ngModel)]="inversion" min="0"
+            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          <p class="text-xs text-slate-400">Monto total invertido al inicio del proyecto</p>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Tasa de descuento (%)</label>
+          <input type="number" [(ngModel)]="tasa" min="0" max="100" step="0.1"
+            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          <p class="text-xs text-slate-400">Costo de oportunidad del capital (TMAR)</p>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Vida útil (años)</label>
+          <input type="number" [(ngModel)]="vidaUtil" min="1" max="50"
+            (change)="onVidaUtilChange()"
+            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+        </div>
+
+        <!-- Flujos dinámicos -->
+        <div class="space-y-2">
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Flujos de caja anuales ($)</label>
+          <div class="space-y-2 max-h-52 overflow-y-auto pr-1">
+            @for (flujo of flujos; track trackByIndex($index)) {
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400 w-12 flex-shrink-0">Año {{ $index + 1 }}</span>
+                <input type="number" [(ngModel)]="flujos[$index]"
+                  class="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Valor de salvamento ($)</label>
+          <input type="number" [(ngModel)]="salvamento" min="0"
+            class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+          <p class="text-xs text-slate-400">Valor residual del activo al final del proyecto</p>
+        </div>
+
+        <app-error-list [errores]="errores" />
+
+        <button (click)="calcular()"
+          class="w-full py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors">
+          Calcular VPN
+        </button>
+      </div>
+
+      <!-- RESULTADOS -->
+      <div class="space-y-4">
+        @if (resultado) {
+          <!-- Tarjeta principal VPN -->
+          <div [class]="resultado.veredicto === 'ACEPTADO'
+            ? 'bg-white rounded-xl border-2 border-emerald-400 shadow-md p-5 space-y-2'
+            : resultado.veredicto === 'RECHAZADO'
+            ? 'bg-white rounded-xl border-2 border-rose-400 shadow-md p-5 space-y-2'
+            : 'bg-white rounded-xl border-2 border-slate-300 shadow-md p-5 space-y-2'">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Valor Presente Neto</p>
+            <p [class]="resultado.veredicto === 'ACEPTADO' ? 'text-4xl font-bold text-emerald-600'
+              : resultado.veredicto === 'RECHAZADO' ? 'text-4xl font-bold text-rose-500'
+              : 'text-4xl font-bold text-slate-700'">
+              {{ resultado.vpn | currency:'USD':'symbol':'1.2-2' }}
+            </p>
+            <app-verdict-badge [veredicto]="resultado.veredicto" />
+          </div>
+
+          <!-- Tabla datos + resultados -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <tbody class="divide-y divide-slate-100">
+                <tr class="bg-slate-50/60">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" colspan="2">Datos de entrada</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-slate-500">Inversión inicial</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ inversion | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2.5 text-slate-500">Tasa de descuento</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ tasa }}%</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-slate-500">Vida útil</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ vidaUtil }} años</td>
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2.5 text-slate-500">Valor de salvamento</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ salvamento | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+                <tr class="bg-slate-50/60">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" colspan="2">Resultados</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-slate-500">VP de ingresos</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ resultado.vpIngresos | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2.5 text-slate-500">Inversión descontada</td>
+                  <td class="px-4 py-2.5 text-right font-medium text-slate-700">{{ resultado.inversion | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold text-slate-700">VPN</td>
+                  <td class="px-4 py-2.5 text-right font-bold text-lg"
+                    [class]="resultado.veredicto === 'ACEPTADO' ? 'text-emerald-600' : resultado.veredicto === 'RECHAZADO' ? 'text-rose-500' : 'text-slate-700'">
+                    {{ resultado.vpn | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="bg-white rounded-xl border border-dashed border-slate-300 p-10 flex flex-col items-center justify-center text-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
+              <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p class="text-sm font-medium text-slate-600">Ingresa los datos y presiona <br><strong>Calcular VPN</strong></p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ANÁLISIS IA -->
+    @if (resultado) {
+      <div class="bg-white rounded-xl border border-indigo-100 shadow-sm p-5 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <span class="text-sm font-semibold text-slate-700">Análisis del resultado</span>
+          @if (analizando) {
+            <span class="text-xs text-indigo-400 animate-pulse ml-1">Generando análisis...</span>
+          }
+        </div>
+        @if (analizando) {
+          <div class="space-y-2 pt-1">
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-full"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-11/12"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-4/5"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-full"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-3/4"></div>
+          </div>
+        } @else if (analisis) {
+          <p class="text-sm text-slate-600 leading-relaxed">{{ analisis }}</p>
+        }
+      </div>
+    }
+
+    <!-- GRÁFICA -->
+    <app-cash-flow-chart [flujos]="flujos" label="Flujos de Caja por Año" />
+
+  </div>
+</div>

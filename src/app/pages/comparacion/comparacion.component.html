@@ -1,0 +1,596 @@
+<div class="flex flex-col min-h-screen">
+  <app-topbar titulo="Comparación de Alternativas" subtitulo="Evalúa de 2 a 4 proyectos por método y determina la mejor opción" />
+
+  <div id="comparacion-reporte" class="flex-1 p-6 space-y-6">
+
+    <!-- Acciones + selector de método -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex rounded-lg border border-slate-200 overflow-hidden bg-white">
+        <button (click)="metodo = 'vpn'"
+          [class]="metodo === 'vpn' ? 'px-4 py-2 text-sm font-semibold bg-indigo-500 text-white flex items-center gap-1.5' : 'px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5'">
+          VPN
+          @if (ganadorIdxVpn !== null) {
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+          }
+        </button>
+        <button (click)="metodo = 'cae'"
+          [class]="metodo === 'cae' ? 'px-4 py-2 text-sm font-semibold bg-indigo-500 text-white flex items-center gap-1.5' : 'px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5'">
+          CAE
+          @if (ganadorIdxCae !== null) {
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+          }
+        </button>
+        <button (click)="metodo = 'tir'"
+          [class]="metodo === 'tir' ? 'px-4 py-2 text-sm font-semibold bg-indigo-500 text-white flex items-center gap-1.5' : 'px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5'">
+          TIR
+          @if (ganadorIdxTir !== null) {
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+          }
+        </button>
+      </div>
+
+      <div class="flex gap-2 flex-wrap">
+        <button (click)="cargarEjemplo()"
+          class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">Cargar ejemplo</button>
+        <button (click)="limpiar()"
+          class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">Limpiar</button>
+        @if (hasResultados) {
+          <button (click)="exportarPDF()"
+            class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Exportar este método
+          </button>
+        }
+        @if (metodosCompletados.length > 0) {
+          <button (click)="exportarReporteCompleto()"
+            class="text-xs px-3 py-1.5 rounded-lg bg-slate-700 text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Reporte completo
+            <span class="opacity-70">({{ metodosCompletados.length }}/3)</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ===== VPN INPUT ===== -->
+    @if (metodo === 'vpn') {
+      <div [class]="gridClass">
+        @for (alt of vpnAlts; track $index; let altI = $index) {
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3 relative">
+            @if (vpnAlts.length > 2) {
+              <button (click)="eliminarAlternativa(altI)"
+                class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors"
+                title="Eliminar alternativa">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+            <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[altI] }}</span>
+              Alternativa {{ LABELS[altI] }}
+            </h3>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Inversión ($)</label>
+              <input type="number" [(ngModel)]="alt.inversion" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Tasa (%)</label>
+              <input type="number" [(ngModel)]="alt.tasa" min="0" step="0.1"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Vida útil (años)</label>
+              <input type="number" [(ngModel)]="alt.vidaUtil" min="1" max="50" (change)="onVidaUtilChange(alt)"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Flujos anuales ($)</label>
+              <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                @for (f of alt.flujos; track $index) {
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 w-12 flex-shrink-0">Año {{ $index + 1 }}</span>
+                    <input type="number" [(ngModel)]="alt.flujos[$index]"
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Salvamento ($)</label>
+              <input type="number" [(ngModel)]="alt.salvamento" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== CAE INPUT ===== -->
+    @if (metodo === 'cae') {
+      <div [class]="gridClass">
+        @for (alt of caeAlts; track $index; let altI = $index) {
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3 relative">
+            @if (caeAlts.length > 2) {
+              <button (click)="eliminarAlternativa(altI)"
+                class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors"
+                title="Eliminar alternativa">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+            <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[altI] }}</span>
+              Alternativa {{ LABELS[altI] }}
+            </h3>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Costo inicial ($)</label>
+              <input type="number" [(ngModel)]="alt.costoInicial" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Tasa (%)</label>
+              <input type="number" [(ngModel)]="alt.tasa" min="0" step="0.1"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Vida útil (años)</label>
+              <input type="number" [(ngModel)]="alt.anios" min="1" max="50"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Costos de operación anuales ($)</label>
+              <input type="number" [(ngModel)]="alt.costosOperacion" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Salvamento ($)</label>
+              <input type="number" [(ngModel)]="alt.salvamento" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== TIR INPUT ===== -->
+    @if (metodo === 'tir') {
+      <div [class]="gridClass">
+        @for (alt of tirAlts; track $index; let altI = $index) {
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3 relative">
+            @if (tirAlts.length > 2) {
+              <button (click)="eliminarAlternativa(altI)"
+                class="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors"
+                title="Eliminar alternativa">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+            <h3 class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[altI] }}</span>
+              Alternativa {{ LABELS[altI] }}
+            </h3>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Inversión ($)</label>
+              <input type="number" [(ngModel)]="alt.inversion" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">TMAR (%)</label>
+              <input type="number" [(ngModel)]="alt.tmar" min="0" step="0.1"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Vida útil (años)</label>
+              <input type="number" [(ngModel)]="alt.vidaUtil" min="1" max="50" (change)="onVidaUtilChange(alt)"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Flujos anuales ($)</label>
+              <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                @for (f of alt.flujos; track $index) {
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 w-12 flex-shrink-0">Año {{ $index + 1 }}</span>
+                    <input type="number" [(ngModel)]="alt.flujos[$index]"
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500 uppercase tracking-wide font-medium">Salvamento ($)</label>
+              <input type="number" [(ngModel)]="alt.salvamento" min="0"
+                class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent" />
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Agregar alternativa -->
+    @if (numAlts < MAX_ALTS) {
+      <button (click)="agregarAlternativa()"
+        class="w-full py-2 border-2 border-dashed border-indigo-200 rounded-xl text-sm text-indigo-500 hover:border-indigo-400 hover:bg-indigo-50/40 transition-colors flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Agregar alternativa
+        <span class="text-xs text-indigo-400">({{ numAlts }}/{{ MAX_ALTS }})</span>
+      </button>
+    }
+
+    <!-- Errores + calcular -->
+    <app-error-list [errores]="errores" />
+    <button (click)="calcular()"
+      class="w-full py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors">
+      Comparar alternativas
+    </button>
+
+    <!-- ══════════════════ RESULTADOS ══════════════════ -->
+    @if (hasResultados) {
+
+      <!-- Tarjetas de resultado -->
+      <div [class]="gridClass">
+
+        <!-- VPN result cards -->
+        @if (metodo === 'vpn') {
+          @for (res of resVpn; track $index; let i = $index) {
+            <div [class]="ganadorIdx === i
+              ? 'bg-white rounded-xl border-2 border-emerald-400 shadow-md p-4 space-y-1.5 relative'
+              : 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-1.5 relative opacity-80'">
+              @if (ganadorIdx === i) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">RECOMENDADA</span>
+                </div>
+              }
+              @if (ganadorIdx === -1) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-slate-400 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">EMPATE</span>
+                </div>
+              }
+              <div class="flex items-center gap-2 pt-2">
+                <span class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                <span class="text-sm font-semibold text-slate-700">Alternativa {{ LABELS[i] }}</span>
+              </div>
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Valor Presente Neto</p>
+              <p [class]="ganadorIdx === i ? 'text-2xl font-bold text-emerald-600' : 'text-2xl font-bold text-slate-700'">
+                {{ res?.vpn | currency:'USD':'symbol':'1.2-2' }}
+              </p>
+              <app-verdict-badge [veredicto]="res!.veredicto" />
+            </div>
+          }
+        }
+
+        <!-- CAE result cards -->
+        @if (metodo === 'cae') {
+          @for (res of resCae; track $index; let i = $index) {
+            <div [class]="ganadorIdx === i
+              ? 'bg-white rounded-xl border-2 border-emerald-400 shadow-md p-4 space-y-1.5 relative'
+              : 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-1.5 relative opacity-80'">
+              @if (ganadorIdx === i) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">RECOMENDADA</span>
+                </div>
+              }
+              @if (ganadorIdx === -1) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-slate-400 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">EMPATE</span>
+                </div>
+              }
+              <div class="flex items-center gap-2 pt-2">
+                <span class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                <span class="text-sm font-semibold text-slate-700">Alternativa {{ LABELS[i] }}</span>
+              </div>
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Costo Anual Equivalente</p>
+              <p [class]="ganadorIdx === i ? 'text-2xl font-bold text-emerald-600' : 'text-2xl font-bold text-slate-700'">
+                {{ res?.cae | currency:'USD':'symbol':'1.2-2' }}<span class="text-sm font-normal text-slate-400">/año</span>
+              </p>
+              <p class="text-xs text-slate-500">Menor CAE = mejor opción</p>
+            </div>
+          }
+        }
+
+        <!-- TIR result cards -->
+        @if (metodo === 'tir') {
+          @for (res of resTir; track $index; let i = $index) {
+            <div [class]="ganadorIdx === i
+              ? 'bg-white rounded-xl border-2 border-emerald-400 shadow-md p-4 space-y-1.5 relative'
+              : 'bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-1.5 relative opacity-80'">
+              @if (ganadorIdx === i) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">RECOMENDADA</span>
+                </div>
+              }
+              @if (ganadorIdx === -1) {
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span class="bg-slate-400 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">EMPATE</span>
+                </div>
+              }
+              <div class="flex items-center gap-2 pt-2">
+                <span class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                <span class="text-sm font-semibold text-slate-700">Alternativa {{ LABELS[i] }}</span>
+              </div>
+              <p class="text-xs text-slate-400 uppercase tracking-wide font-medium">Tasa Interna de Retorno</p>
+              <p [class]="ganadorIdx === i ? 'text-2xl font-bold text-emerald-600' : 'text-2xl font-bold text-slate-700'">
+                {{ res?.tir | number:'1.2-2' }}%
+              </p>
+              <app-verdict-badge [veredicto]="res!.veredicto" />
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Tabla comparativa detallada -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100">
+          <h3 class="text-sm font-semibold text-slate-700">Tabla comparativa detallada</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm min-w-[480px]">
+            <thead>
+              @if (metodo === 'vpn') {
+                <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500">
+                  <th class="px-4 py-3 text-left font-semibold w-44">Parámetro</th>
+                  @for (alt of vpnAlts; track $index; let i = $index) {
+                    <th class="px-4 py-3 font-semibold">
+                      <span class="flex items-center justify-end gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                        Alt. {{ LABELS[i] }}
+                      </span>
+                    </th>
+                  }
+                </tr>
+              }
+              @if (metodo === 'cae') {
+                <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500">
+                  <th class="px-4 py-3 text-left font-semibold w-44">Parámetro</th>
+                  @for (alt of caeAlts; track $index; let i = $index) {
+                    <th class="px-4 py-3 font-semibold">
+                      <span class="flex items-center justify-end gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                        Alt. {{ LABELS[i] }}
+                      </span>
+                    </th>
+                  }
+                </tr>
+              }
+              @if (metodo === 'tir') {
+                <tr class="bg-slate-50 text-xs uppercase tracking-widest text-slate-500">
+                  <th class="px-4 py-3 text-left font-semibold w-44">Parámetro</th>
+                  @for (alt of tirAlts; track $index; let i = $index) {
+                    <th class="px-4 py-3 font-semibold">
+                      <span class="flex items-center justify-end gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center justify-center">{{ LABELS[i] }}</span>
+                        Alt. {{ LABELS[i] }}
+                      </span>
+                    </th>
+                  }
+                </tr>
+              }
+            </thead>
+
+            <tbody class="divide-y divide-slate-100">
+
+              <!-- ── VPN TABLE BODY ── -->
+              @if (metodo === 'vpn') {
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="vpnAlts.length + 1">Datos de entrada</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Inversión inicial</td>
+                  @for (alt of vpnAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.inversion | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">Tasa de descuento</td>
+                  @for (alt of vpnAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.tasa }}%</td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Vida útil</td>
+                  @for (alt of vpnAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.vidaUtil }} años</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">Valor de salvamento</td>
+                  @for (alt of vpnAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.salvamento | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="vpnAlts.length + 1">Resultados</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">VP de ingresos</td>
+                  @for (res of resVpn; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ res?.vpIngresos | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 font-semibold text-slate-700">VPN</td>
+                  @for (res of resVpn; track $index; let ri = $index) {
+                    <td class="px-4 py-3 text-right font-bold text-lg"
+                      [class.text-emerald-600]="ganadorIdx === ri"
+                      [class.text-slate-700]="ganadorIdx !== ri">
+                      {{ res?.vpn | currency:'USD':'symbol':'1.2-2' }}
+                    </td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Veredicto</td>
+                  @for (res of resVpn; track $index) {
+                    <td class="px-4 py-3 text-right"><app-verdict-badge [veredicto]="res!.veredicto" /></td>
+                  }
+                </tr>
+              }
+
+              <!-- ── CAE TABLE BODY ── -->
+              @if (metodo === 'cae') {
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="caeAlts.length + 1">Datos de entrada</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Costo inicial</td>
+                  @for (alt of caeAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.costoInicial | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">Tasa de descuento</td>
+                  @for (alt of caeAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.tasa }}%</td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Vida útil</td>
+                  @for (alt of caeAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.anios }} años</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">Costos de operación</td>
+                  @for (alt of caeAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.costosOperacion | currency:'USD':'symbol':'1.2-2' }}/año</td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Valor de salvamento</td>
+                  @for (alt of caeAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.salvamento | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="caeAlts.length + 1">Resultados</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">VP del salvamento</td>
+                  @for (res of resCae; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ res?.vpSalvamento | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 font-semibold text-slate-700">CAE</td>
+                  @for (res of resCae; track $index; let ri = $index) {
+                    <td class="px-4 py-3 text-right font-bold text-lg"
+                      [class.text-emerald-600]="ganadorIdx === ri"
+                      [class.text-slate-700]="ganadorIdx !== ri">
+                      {{ res?.cae | currency:'USD':'symbol':'1.2-2' }}/año
+                    </td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-xs text-slate-500 italic">Criterio: menor CAE es preferible</td>
+                  @for (res of resCae; track $index; let ri = $index) {
+                    <td class="px-4 py-3 text-right">
+                      @if (ganadorIdx === ri) { <app-verdict-badge veredicto="ACEPTADO" /> }
+                    </td>
+                  }
+                </tr>
+              }
+
+              <!-- ── TIR TABLE BODY ── -->
+              @if (metodo === 'tir') {
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="tirAlts.length + 1">Datos de entrada</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Inversión inicial</td>
+                  @for (alt of tirAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.inversion | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">TMAR</td>
+                  @for (alt of tirAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.tmar }}%</td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Vida útil</td>
+                  @for (alt of tirAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.vidaUtil }} años</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">Valor de salvamento</td>
+                  @for (alt of tirAlts; track $index) {
+                    <td class="px-4 py-3 text-right text-slate-700">{{ alt.salvamento | currency:'USD':'symbol':'1.2-2' }}</td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/40">
+                  <td class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide" [attr.colspan]="tirAlts.length + 1">Resultados</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-semibold text-slate-700">TIR calculada</td>
+                  @for (res of resTir; track $index; let ri = $index) {
+                    <td class="px-4 py-3 text-right font-bold text-lg"
+                      [class.text-emerald-600]="ganadorIdx === ri"
+                      [class.text-slate-700]="ganadorIdx !== ri">
+                      {{ res?.tir | number:'1.2-2' }}%
+                    </td>
+                  }
+                </tr>
+                <tr class="bg-slate-50/50">
+                  <td class="px-4 py-3 text-slate-600">TIR − TMAR</td>
+                  @for (res of resTir; track $index; let ri = $index) {
+                    <td class="px-4 py-3 text-right font-medium"
+                      [class.text-emerald-600]="res!.tir >= res!.tmar"
+                      [class.text-rose-500]="res!.tir < res!.tmar">
+                      {{ (res!.tir - res!.tmar) | number:'1.2-2' }}%
+                    </td>
+                  }
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-600">Veredicto</td>
+                  @for (res of resTir; track $index) {
+                    <td class="px-4 py-3 text-right"><app-verdict-badge [veredicto]="res!.veredicto" /></td>
+                  }
+                </tr>
+              }
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- ANÁLISIS DEL RESULTADO -->
+    @if (hasResultados) {
+      <div class="bg-white rounded-xl border border-indigo-100 shadow-sm p-5 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+          </div>
+          <span class="text-sm font-semibold text-slate-700">Análisis del resultado</span>
+          @if (analizando) {
+            <span class="text-xs text-indigo-400 animate-pulse ml-1">Generando análisis...</span>
+          }
+        </div>
+        @if (analizando) {
+          <div class="space-y-2 pt-1">
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-full"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-11/12"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-4/5"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-full"></div>
+            <div class="h-3 bg-slate-100 rounded animate-pulse w-3/4"></div>
+          </div>
+        } @else if (analisis) {
+          <p class="text-sm text-slate-600 leading-relaxed">{{ analisis }}</p>
+        }
+      </div>
+    }
+
+  </div>
+</div>
