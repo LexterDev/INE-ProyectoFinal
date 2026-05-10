@@ -87,6 +87,28 @@ function dibujarFooter(doc: jsPDF): void {
   doc.text('INE App · SEAE · INE 135 · Ciclo I/2026 · Universidad de El Salvador · Occidente', 105, pageH - 5, { align: 'center' });
 }
 
+function dibujarSituacion(doc: jsPDF, situacion: string, y: number): number {
+  if (!situacion) return y;
+  doc.setFillColor(...INDIGO);
+  doc.rect(10, y, 3, 6, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...DARK);
+  doc.text('SITUACIÓN EMPRESARIAL', 16, y + 4.5);
+  y += 10;
+  const lineas = doc.splitTextToSize(situacion, 183);
+  const boxH = lineas.length * 5 + 8;
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(10, y, 190, boxH, 2, 2, 'FD');
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(9);
+  doc.setTextColor(51, 65, 85);
+  doc.text(lineas, 14, y + 6);
+  return y + boxH + 8;
+}
+
 function seccion(doc: jsPDF, titulo: string, y: number): number {
   doc.setFillColor(...INDIGO);
   doc.rect(10, y, 3, 6, 'F');
@@ -489,11 +511,13 @@ export class PdfExportService {
     alts: (DatosVPN | DatosCAE | DatosTIR)[],
     resultados: (ResultadoVPN | ResultadoCAE | ResultadoTIR)[],
     ganadorIdx: number,
-    analisis = ''
+    analisis = '',
+    situacion = ''
   ): void {
     const nombreMetodo = metodo === 'vpn' ? 'Comparación VPN' : metodo === 'cae' ? 'Comparación CAE' : 'Comparación TIR';
     const doc = new jsPDF('p', 'mm', 'a4');
     let y = dibujarHeader(doc, nombreMetodo);
+    y = dibujarSituacion(doc, situacion, y);
     y = seccion(doc, 'Tabla comparativa de alternativas', y);
     this.buildSeccionComparacion(doc, metodo, alts, resultados, ganadorIdx, analisis, y);
     dibujarFooter(doc);
@@ -508,10 +532,11 @@ export class PdfExportService {
     resultados: any[];
     ganadorIdx: number;
     analisis: string;
-  }>): void {
+  }>, situacion = ''): void {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageH = doc.internal.pageSize.getHeight();
     let y = dibujarHeader(doc, 'Reporte Comparativo Completo');
+    y = dibujarSituacion(doc, situacion, y);
 
     const footerMargin = 20;
     // Espacio mínimo necesario al inicio de una sección:

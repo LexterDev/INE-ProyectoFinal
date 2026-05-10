@@ -61,6 +61,9 @@ export class ComparacionComponent implements OnInit {
   analizandoTir = false;
   erroresTir: string[] = [];
 
+  // ── Situación empresarial (global) ────────────────────────
+  situacion = '';
+
   constructor(
     private vpnService: VpnService,
     private caeService: CaeService,
@@ -143,7 +146,16 @@ export class ComparacionComponent implements OnInit {
     } catch { /* storage lleno o no disponible */ }
   }
 
+  saveSituacion(): void {
+    try { localStorage.setItem('ine_comp_situacion', this.situacion); } catch {}
+  }
+
   private loadFromStorage(): void {
+    try {
+      const rawSit = localStorage.getItem('ine_comp_situacion');
+      if (rawSit !== null) this.situacion = rawSit;
+    } catch {}
+
     (['vpn', 'cae', 'tir'] as Metodo[]).forEach(m => {
       try {
         const raw = localStorage.getItem(`ine_comp_${m}`);
@@ -341,11 +353,11 @@ export class ComparacionComponent implements OnInit {
 
   exportarPDF(): void {
     if (this.metodo === 'vpn' && this.ganadorIdxVpn !== null && this.resVpn.every(r => r !== null)) {
-      this.pdfService.exportarComparacion('vpn', this.vpnAlts, this.resVpn as ResultadoVPN[], this.ganadorIdxVpn, this.analisisVpn);
+      this.pdfService.exportarComparacion('vpn', this.vpnAlts, this.resVpn as ResultadoVPN[], this.ganadorIdxVpn, this.analisisVpn, this.situacion);
     } else if (this.metodo === 'cae' && this.ganadorIdxCae !== null && this.resCae.every(r => r !== null)) {
-      this.pdfService.exportarComparacion('cae', this.caeAlts, this.resCae as ResultadoCAE[], this.ganadorIdxCae, this.analisisCAE);
+      this.pdfService.exportarComparacion('cae', this.caeAlts, this.resCae as ResultadoCAE[], this.ganadorIdxCae, this.analisisCAE, this.situacion);
     } else if (this.metodo === 'tir' && this.ganadorIdxTir !== null && this.resTir.every(r => r !== null)) {
-      this.pdfService.exportarComparacion('tir', this.tirAlts, this.resTir as ResultadoTIR[], this.ganadorIdxTir, this.analisisTir);
+      this.pdfService.exportarComparacion('tir', this.tirAlts, this.resTir as ResultadoTIR[], this.ganadorIdxTir, this.analisisTir, this.situacion);
     }
   }
 
@@ -357,7 +369,7 @@ export class ComparacionComponent implements OnInit {
       secciones.push({ metodo: 'cae', alts: this.caeAlts, resultados: this.resCae, ganadorIdx: this.ganadorIdxCae, analisis: this.analisisCAE });
     if (this.ganadorIdxTir !== null && this.resTir.every(r => r !== null))
       secciones.push({ metodo: 'tir', alts: this.tirAlts, resultados: this.resTir, ganadorIdx: this.ganadorIdxTir, analisis: this.analisisTir });
-    if (secciones.length > 0) this.pdfService.exportarReporteCompleto(secciones);
+    if (secciones.length > 0) this.pdfService.exportarReporteCompleto(secciones, this.situacion);
   }
 
   trackByIndex = (i: number) => i;

@@ -4,14 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { CaeService, ResultadoCAE } from '../../core/services/cae.service';
 import { PdfExportService } from '../../core/services/pdf-export.service';
 import { AiAnalysisService } from '../../core/services/ai-analysis.service';
-import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { TopbarComponent } from '../../shared/components/topbar/topbar.component';
 import { ErrorListComponent } from '../../shared/components/error-list/error-list.component';
 
 @Component({
   selector: 'app-cae',
   standalone: true,
-  imports: [CommonModule, FormsModule, MetricCardComponent, TopbarComponent, ErrorListComponent],
+  imports: [CommonModule, FormsModule, TopbarComponent, ErrorListComponent],
   templateUrl: './cae.component.html',
   styleUrl: './cae.component.css'
 })

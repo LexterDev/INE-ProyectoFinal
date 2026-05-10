@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { VpnService, ResultadoVPN } from '../../core/services/vpn.service';
 import { PdfExportService } from '../../core/services/pdf-export.service';
 import { AiAnalysisService } from '../../core/services/ai-analysis.service';
-import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
 import { VerdictBadgeComponent } from '../../shared/components/verdict-badge/verdict-badge.component';
 import { CashFlowChartComponent } from '../../shared/components/cash-flow-chart/cash-flow-chart.component';
 import { TopbarComponent } from '../../shared/components/topbar/topbar.component';
@@ -13,7 +12,7 @@ import { ErrorListComponent } from '../../shared/components/error-list/error-lis
 @Component({
   selector: 'app-vpn',
   standalone: true,
-  imports: [CommonModule, FormsModule, MetricCardComponent, VerdictBadgeComponent, CashFlowChartComponent, TopbarComponent, ErrorListComponent],
+  imports: [CommonModule, FormsModule, VerdictBadgeComponent, CashFlowChartComponent, TopbarComponent, ErrorListComponent],
   templateUrl: './vpn.component.html',
   styleUrl: './vpn.component.css'
 })
